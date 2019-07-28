@@ -1,0 +1,9 @@
+[Unit]
+Description=Run update_snapshot_entry after a good boot
+
+[Install]
+WantedBy=udpate_snapshot_entry.timer
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/update_snapshot_entry.sh
