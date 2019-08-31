@@ -2,7 +2,7 @@
 Description=Run update_snapshot_entry after a good boot
 
 [Timer]
-OnBootSec=60
+OnBootSec=2
 Persistent=true
 
 [Install]
