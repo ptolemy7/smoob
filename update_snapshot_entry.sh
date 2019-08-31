@@ -1,10 +1,8 @@
 #!/bin/bash
-#declare -a latestboot_array
 latestboot_array=($(/usr/bin/snapper -c root list |
 /usr/bin/grep boot |
- /usr/bin/cut -b -5 |
- sort -nr))
- #LATESTBOOT=${latestboot_array[0]}
+/usr/bin/cut -b -5 |
+/usr/bin/sort -nr))
 echo "title Well Crap . . . (snapshot #"${latestboot_array[0]}")
 linux /vmlinuz-linux
 initrd /intel-ucode.img
