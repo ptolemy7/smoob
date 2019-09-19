@@ -6,4 +6,4 @@ WantedBy=udpate_snapshot_entry.timer
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/sbin/update_snapshot_entry.sh
+ExecStart=/usr/local/sbin/snapper-menu-option.sh
