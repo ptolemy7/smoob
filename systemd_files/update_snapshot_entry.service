@@ -1,8 +1,7 @@
 [Unit]
 Description=Run update_snapshot_entry after a good boot
-
-[Install]
-WantedBy=udpate_snapshot_entry.timer
+Requires=snapper-boot.serivce
+After=snapper-boot.service
 
 [Service]
 Type=oneshot
