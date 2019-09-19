@@ -1,6 +1,6 @@
 #Maintainer: Dalton Sconce <dsconce@protonmail.com>
 pkgname=snapper-menu-option
-pkgver=0.1.0
+pkgver=0.1.1
 pkgrel=1
 epoch=
 pkgdesc="Adds an option to systemd-boot menu to boot into a snapshot"
@@ -10,7 +10,7 @@ license=('GPL')
 groups=()
 depends=('systemd' 'snapper' 'sed' 'coreutils')
 install=
-source=("https://raw.githubusercontent.com/ptolemy7/snapper-menu-option/master/tarball/snapper-menu-option.${pkgver}.tar.gz")
+source=("${pkgname}-${pkgver}::https://raw.githubusercontent.com/ptolemy7/snapper-menu-option/master/tarball/v.${pkgver}.tar.gz")
 md5sums=('62fe367b708cbe8f11ffe77dddfbc0e9')
 package() {
   mkdir -p $pkgdir/etc/systemd/system/
