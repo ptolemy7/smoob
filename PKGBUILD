@@ -1,4 +1,4 @@
-Maintainer: Dalton Sconce <dsconce@protonmail.com>
+#Maintainer: Dalton Sconce <dsconce@protonmail.com>
 pkgname=systemd_snapshot_option
 pkgver=0.1.0
 pkgrel=1
@@ -19,8 +19,7 @@ backup=()
 options=()
 install=
 changelog=
-source=("$pkgname-$pkgver.tar.gz"
-        "$pkgname-$pkgver.patch")
+source=("test_build.tar.gz")
 noextract=()
 md5sums=()
 validpgpkeys=()
