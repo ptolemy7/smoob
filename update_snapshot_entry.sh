@@ -14,7 +14,7 @@ latestboot_array=($(/usr/bin/snapper -c root list |
 #What follows from here is just what are my personal options for booting with the
 #array number inserted into the appropriate place, I would have assigned a new
 #variable for the latest boot number buuuut it is only used in 2 places, so
-#I thought why mess with it 
+#I thought why mess with it
 echo "title Well Crap . . . (snapshot #"${latestboot_array[0]}")
 linux /vmlinuz-linux
 initrd /intel-ucode.img
