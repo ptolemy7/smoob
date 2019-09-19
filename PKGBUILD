@@ -10,7 +10,7 @@ license=('GPL')
 groups=()
 depends=('systemd' 'snapper' 'sed' 'coreutils')
 install=
-source=("https://github.com/ptolemy7/$pkgname/tarball/$pkgname.$pkgver.tar.gz/test_build.tar.gz")
+source=("https://github.com/ptolemy7/$pkgname/tarball/$pkgname.$pkgver.tar.gz")
 md5sum=("62fe367b708cbe8f11ffe77dddfbc0e9")
 package() {
   mkdir -p $pkgdir/etc/systemd/system/
