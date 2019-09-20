@@ -1,0 +1,36 @@
+#!/bin/bash
+#Define an array of this somewhat annoying pipe
+#Firstly, get the list of snapshots the official way through snapper
+#Secondly, grep for the snapshots taken on boot_snapshot
+#Thirdly, cut everything down to size of just the snapshot numbers
+#Finally, sort it all into an array with the biggest as the first element
+grep=/usr/bin/grep
+latestboot_array=( $(/usr/bin/snapper -c root list |
+$grep boot |
+/usr/bin/cut -b -5 |
+/usr/bin/sort -nr))
+default_loader_array=( $(/usr/bin/grep default /boot/loader/loader.conf) )
+echo ${default_loader_array[@]}
+DEFAULT_LOADER="/boot/loader/entries/${default_loader_array[1]}.conf"
+#echo $DEFAULT_LOADER
+loader_options=$($grep options $DEFAULT_LOADER)
+LINUX=$($grep linux $DEFAULT_LOADER)
+INITRD=$( ($grep initrd $DEFAULT_LOADER) )
+TITLE="title Well Crap .  . ${latest_boot_array[1]}"
+TARGET_FILE=./test
+echo $TITLE > $TARGET_FILE
+echo $LINUX >> $TARGET_FILE
+echo ${INITRD[@]} >> $TARGET_FILE
+echo "$loader_options rootflags=subvol=">> $TARGET_FILE
+echo "------------------"
+#Even though we have the entire list as an array, we only use the first element
+#We only use the first element because all this does is make an entry for the
+#firt element of the array as it is the latest one which booted correctly
+#What follows from here is just what are my personal options for booting with the
+#array number inserted into the appropriate place, I would have assigned a new
+#variable for the latest boot number buuuut it is only used in 2 places, so
+#I thought why mess with it
+# echo "title Well Crap . . . (snapshot #"${latestboot_array[0]}")
+# $LINUX
+# ${INITRD[@]}
+# $loader_options rootflags=subvol=arch/.snapshots/"${latestboot_array[0]}""
