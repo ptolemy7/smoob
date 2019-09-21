@@ -3,6 +3,9 @@ Description=Run update_snapshot_entry after a good boot
 Requires=snapper-boot.serivce
 After=snapper-boot.service
 
+[Install]
+WantedBy=multi-user.target
+
 [Service]
 Type=oneshot
-ExecStart=/usr/local/sbin/snapper-menu-option.sh
+ExecStart=/usr/local/sbin/snapper-menu-update
