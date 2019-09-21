@@ -34,6 +34,7 @@ ROOT_SUBVOL=${ROOT_SUBVOL_STNG##*path }
 TITLE="Well Crap . . ."
 # Target file is test right now becuase this is indeed a test
 TARGET_FILE=./test
+#Now is the time to write to the file
 #One carrot here to overwrite file
 echo "title $TITLE (snapshot # ${latestboot_array[0]} )" > $TARGET_FILE
 #The rest are 2 carrots to just cat onto the end of the file
