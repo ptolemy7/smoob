@@ -16,7 +16,7 @@ package() {
   mkdir -p $pkgdir/etc/systemd/system/
   mkdir -p $pkgdir/usr/local/sbin/
   install -D ./systemd_files/* $pkgdir/etc/systemd/system/
-  install -D update_snapshot_entry.sh $pkgdir/usr/local/sbin/snapper-menu-update.sh
+  install -D update_snapshot_entry $pkgdir/usr/local/sbin/snapper-menu-update
 }
 # md5sums=('62fe367b708cbe8f11ffe77dddfbc0e9')
 md5sums=('85cc65aff8b4dce57cd54ce6cec6daf8')
