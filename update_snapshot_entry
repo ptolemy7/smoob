@@ -1,36 +1,44 @@
 #!/bin/bash
-#Define an array of this somewhat annoying pipe
-#Firstly, get the list of snapshots the official way through snapper
-#Secondly, grep for the snapshots taken on boot_snapshot
-#Thirdly, cut everything down to size of just the snapshot numbers
-#Finally, sort it all into an array with the biggest as the first element
+
+#First, let us define some variable to make my life easier
+#############
+#This is just to be safe and not assume path, and quality of life
 grep=/usr/bin/grep
+#Sets up an array to parse the default loader
+defualt_loader_array=( $($grep default /boot/loader/loader.conf) )
+#Set the default loader
+DEFAULT_LOADER="/boot/loader/entries/${defualt_loader_array[1]}.conf"
+# To make just a little more concise
+#Array of latest boot snapshots
 latestboot_array=( $(/usr/bin/snapper -c root list |
 $grep boot |
 /usr/bin/cut -b -5 |
 /usr/bin/sort -nr))
-default_loader_array=( $(/usr/bin/grep default /boot/loader/loader.conf) )
-echo ${default_loader_array[@]}
-DEFAULT_LOADER="/boot/loader/entries/${default_loader_array[1]}.conf"
-#echo $DEFAULT_LOADER
-loader_options=$($grep options $DEFAULT_LOADER)
-LINUX=$($grep linux $DEFAULT_LOADER)
-INITRD=$( ($grep initrd $DEFAULT_LOADER) )
-TITLE="title Well Crap .  . ${latest_boot_array[1]}"
+# All just things snatched from the default loader
+grab_from_loader() {
+  $grep "$1" $DEFAULT_LOADER
+}
+OPTIONS=$(grab_from_loader options)
+LINUX=$(grab_from_loader "linux ")
+INITRD=$( (grab_from_loader initrd) )
+declare -a initrd_files
+for i in ${#INITRD[@]}; do
+  if [ $(( $i % 2 == 0 )) ]; then
+    initrd_files+=(${INITRD[$i]})
+  fi
+done
+# This is to get the subvolume which the root is on
+ROOT_SUBVOL_STNG=$(btrfs sub get-default / )
+ROOT_SUBVOL=${ROOT_SUBVOL_STNG##*path }
+#Title can be changed to something a little more . . . professional
+TITLE="Well Crap . . ."
+# Target file is test right now becuase this is indeed a test
 TARGET_FILE=./test
-echo $TITLE > $TARGET_FILE
+#One carrot here to overwrite file
+echo "title $TITLE (snapshot # ${latestboot_array[0]} )" > $TARGET_FILE
+#The rest are 2 carrots to just cat onto the end of the file
 echo $LINUX >> $TARGET_FILE
-echo ${INITRD[@]} >> $TARGET_FILE
-echo "$loader_options rootflags=subvol=">> $TARGET_FILE
-echo "------------------"
-#Even though we have the entire list as an array, we only use the first element
-#We only use the first element because all this does is make an entry for the
-#firt element of the array as it is the latest one which booted correctly
-#What follows from here is just what are my personal options for booting with the
-#array number inserted into the appropriate place, I would have assigned a new
-#variable for the latest boot number buuuut it is only used in 2 places, so
-#I thought why mess with it
-# echo "title Well Crap . . . (snapshot #"${latestboot_array[0]}")
-# $LINUX
-# ${INITRD[@]}
-# $loader_options rootflags=subvol=arch/.snapshots/"${latestboot_array[0]}""
+for i in $initrd_files; do
+  echo "initrd "$i" " >> $TARGET_FILE
+done
+echo "$OPTIONS rootflags=subvol=$ROOT_SUBVOL/.snapshots/${latestboot_array[0]}" >> $TARGET_FILE
