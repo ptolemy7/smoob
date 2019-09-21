@@ -1,13 +1,17 @@
 #!/bin/bash
 
+#These are variables you should looks at changing first:
+TITLE="Well crap . . ."
+LOADER_FOLDER="/boot/loader"
+TARGET_FOLDER="$LOADER_FOLDER/entries/boot_snapshot.conf"
 #First, let us define some variable to make my life easier
 #############
 #This is just to be safe and not assume path, and quality of life
 grep=/usr/bin/grep
 #Sets up an array to parse the default loader
-defualt_loader_array=( $($grep default /boot/loader/loader.conf) )
+defualt_loader_array=( $($grep default $LOADER_FOLDER/loader.conf) )
 #Set the default loader
-DEFAULT_LOADER="/boot/loader/entries/${defualt_loader_array[1]}.conf"
+DEFAULT_LOADER="$LOADER_FOLDER/entries/${defualt_loader_array[1]}.conf"
 # To make just a little more concise
 #Array of latest boot snapshots
 latestboot_array=( $(/usr/bin/snapper -c root list |
@@ -34,10 +38,6 @@ done
 # This is to get the subvolume which the root is on
 ROOT_SUBVOL_STNG=$(btrfs sub get-default / )
 ROOT_SUBVOL=${ROOT_SUBVOL_STNG##*path }
-#Title can be changed to something a little more . . . professional
-TITLE="Well Crap . . ."
-# Target file is test right now becuase this is indeed a test
-TARGET_FILE=./test
 #### Done with viable declarations #####
 #Now is the time to write to the file
 #One carrot here to overwrite file
