@@ -1,9 +1,0 @@
-[Unit]
-Description=Run update_snapshot_entry after a good boot
-
-[Timer]
-OnBootSec=2
-Persistent=true
-
-[Install]
-WantedBy=timers.target
