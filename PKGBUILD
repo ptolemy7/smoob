@@ -1,6 +1,6 @@
 #Maintainer: Dalton Sconce <dsconce@protonmail.com>
 pkgname=snapper-menu-option
-pkgver=0.9.0
+pkgver=0.9.1
 pkgrel=1
 epoch=
 pkgdesc="Adds an option to systemd-boot menu to boot into a snapshot"
