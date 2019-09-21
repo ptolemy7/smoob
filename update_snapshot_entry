@@ -21,10 +21,14 @@ grab_from_loader() {
 OPTIONS=$(grab_from_loader options)
 LINUX=$(grab_from_loader "linux ")
 INITRD=$( (grab_from_loader initrd) )
+# The only way I could figure out to make sure all the initrd options are
+# Carried over. If you have any suggestions please, by all means, let me know
 declare -a initrd_files
-for i in ${#INITRD[@]}; do
-  if [ $(( $i % 2 == 0 )) ]; then
-    initrd_files+=(${INITRD[$i]})
+# This checks the INITRD array for all of the entries which are not the word "initrd" and
+# adds them to the initrd_files array
+for i in ${INITRD[@]}; do
+  if [ "$i" != "initrd" ]; then
+    initrd_files+=($i)
   fi
 done
 # This is to get the subvolume which the root is on
@@ -34,12 +38,15 @@ ROOT_SUBVOL=${ROOT_SUBVOL_STNG##*path }
 TITLE="Well Crap . . ."
 # Target file is test right now becuase this is indeed a test
 TARGET_FILE=./test
+#### Done with viable declarations #####
 #Now is the time to write to the file
 #One carrot here to overwrite file
 echo "title $TITLE (snapshot # ${latestboot_array[0]} )" > $TARGET_FILE
 #The rest are 2 carrots to just cat onto the end of the file
 echo $LINUX >> $TARGET_FILE
-for i in $initrd_files; do
+#Copies the initrd files one line at a time
+for i in ${initrd_files[@]}; do
   echo "initrd "$i" " >> $TARGET_FILE
 done
+# Just adds the rootflag option at the end
 echo "$OPTIONS rootflags=subvol=$ROOT_SUBVOL/.snapshots/${latestboot_array[0]}" >> $TARGET_FILE
