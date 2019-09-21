@@ -1,5 +1,0 @@
-title Well Crap . . . (snapshot # 1013 )
-linux /vmlinuz-linux
-initrd /intel-ucode.img 
-initrd /initramfs-linux.img 
-options quiet rd.luks.name=2efb18ce-dfa4-427c-85d9-ba8e70f28b74=crypt root=/dev/omnia/btrfs quiet  rootflags=subvol=arch/.snapshots/1013

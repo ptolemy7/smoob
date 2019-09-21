@@ -12,7 +12,6 @@ grep=/usr/bin/grep
 defualt_loader_array=( $($grep default $LOADER_FOLDER/loader.conf) )
 #Set the default loader
 DEFAULT_LOADER="$LOADER_FOLDER/entries/${defualt_loader_array[1]}.conf"
-# To make just a little more concise
 #Array of latest boot snapshots
 latestboot_array=( $(/usr/bin/snapper -c root list |
 $grep boot |
@@ -36,7 +35,7 @@ for i in ${INITRD[@]}; do
   fi
 done
 # This is to get the subvolume which the root is on
-ROOT_SUBVOL_STNG=$(btrfs sub get-default / )
+ROOT_SUBVOL_STNG=$(/usr/bin/btrfs sub get-default / )
 ROOT_SUBVOL=${ROOT_SUBVOL_STNG##*path }
 #### Done with viable declarations #####
 #Now is the time to write to the file
