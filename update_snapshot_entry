@@ -3,7 +3,7 @@
 #These are variables you should looks at changing first:
 TITLE="Well crap . . ."
 LOADER_FOLDER="/boot/loader"
-TARGET_FOLDER="$LOADER_FOLDER/entries/boot_snapshot.conf"
+TARGET_FILE="$LOADER_FOLDER/entries/boot_snapshot.conf"
 #First, let us define some variable to make my life easier
 #############
 #This is just to be safe and not assume path, and quality of life
