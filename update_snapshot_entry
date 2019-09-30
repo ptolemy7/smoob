@@ -1,8 +1,24 @@
 #!/bin/bash
 
-if [ "$1" == "" ]; then
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
   print_help
+elif [ "$1" = "-s"] || [ "$1" = "--setup" ]; then
+  setup
+elif
 fi
+case "$1" in
+  "-h" | "--help")
+  print_help
+  ;;
+  "-s" | "--setup")
+  setup
+  ;;
+  "-r" | "--run")
+  run
+  *)
+  echo "command not recongized, try -h or --help for more"
+  ;;
+esac
 #These are variables you should looks at changing first:
 TITLE="Well crap . . ."
 LOADER_FOLDER="/boot/loader"
