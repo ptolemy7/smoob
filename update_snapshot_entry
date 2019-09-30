@@ -1,5 +1,8 @@
 #!/bin/bash
 
+if [ "$1" == "" ]; then
+  print_help
+fi
 #These are variables you should looks at changing first:
 TITLE="Well crap . . ."
 LOADER_FOLDER="/boot/loader"
@@ -40,12 +43,17 @@ ROOT_SUBVOL=${ROOT_SUBVOL_STNG##*path }
 #### Done with viable declarations #####
 #Now is the time to write to the file
 #One carrot here to overwrite file
-echo "title $TITLE (snapshot # ${latestboot_array[0]} )" > $TARGET_FILE
+run () {
+echo "title $TITLE (snapshot # ${latestboot_array[0]} )" > $1
 #The rest are 2 carrots to just cat onto the end of the file
-echo $LINUX >> $TARGET_FILE
+echo $LINUX >> $1
 #Copies the initrd files one line at a time
 for i in ${initrd_files[@]}; do
-  echo "initrd "$i" " >> $TARGET_FILE
+  echo "initrd "$i" " >> $1
 done
 # Just adds the rootflag option at the end
-echo "$OPTIONS rootflags=subvol=$ROOT_SUBVOL/.snapshots/${latestboot_array[0]}" >> $TARGET_FILE
+echo "$OPTIONS rootflags=subvol=$ROOT_SUBVOL/.snapshots/${latestboot_array[0]}" >> $1
+}
+print_help () {
+  echo "insert help stuff here"
+}
