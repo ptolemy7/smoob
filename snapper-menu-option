@@ -6,9 +6,7 @@ grep=/usr/bin/grep
 ### Varibles needed before ANYTHING else ###
 
 #Sets up an array to parse the default loader
-defualt_loader_array=( $($grep default $LOADER_FOLDER/loader.conf) )
-#Set the default loader
-DEFAULT_LOADER="$LOADER_FOLDER/entries/${defualt_loader_array[1]}.conf"
+
 
 ### Start function definitions ###
 setup() {
@@ -63,24 +61,47 @@ defalt_variables() {
   #### Done with viable declarations #####
 }
 
+generate_conf() {
+  CONF="./test"
+  cat_to_conf() {
+    echo "$1" >> $CONF
+  }
+  LOADER_FOLDER="/boot/loader"
+  defualt_loader_array=( $($grep default $LOADER_FOLDER/loader.conf) )
+  #Set the default loader
+  DEFAULT_LOADER="$LOADER_FOLDER/entries/${defualt_loader_array[1]}.conf"
+  TITLE="Well crap . . ."
+
+  TARGET_FILE="$LOADER_FOLDER/entries/boot_snapshot.conf"
+  OPTIONS=$(grab_from_loader options)
+  LINUX=$(grab_from_loader "linux ")
+  INITRD=$( (grab_from_loader initrd) )
+  echo "# This is where you can change the values for the snapper-menu-option" > $CONF
+  cat_to_conf TITLE=$TITLE
+  cat_to_conf LOADER_FOLDER=$LOADER_FOLDER
+  cat_to_conf TARGET_FILE=$TARGET_FILE
+  cat_to_conf OPTIONS=$OPTIONS
+  cat_to_conf LINUX=$LINUX
+  cat_to_conf INITRD=$INITRD
+}
+
 update_file () {
-  default_variables
   # Source the conf file. In theory this will overide the defaults just set if
   # the defaults have changed
-  source /etc/snapper-menu-option.conf
+  source /etc/snapper-menu-option/snapper_menu_option.conf
   latestboot_array=( $(/usr/bin/snapper -c root list |
   $grep boot |
   /usr/bin/cut -b -5 |
   /usr/bin/sort -nr))
-  echo "title $TITLE (snapshot # ${latestboot_array[0]} )" > $1
+  echo "title $TITLE (snapshot # ${latestboot_array[0]} )" > $TARGET_FILE
   #The rest are 2 carrots to just cat onto the end of the file
-  echo $LINUX >> $1
+  echo $LINUX >> $TARGET_FILE
   #Copies the initrd files one line at a time
   for i in ${initrd_files[@]}; do
-    echo "initrd "$i" " >> $1
+    echo "initrd "$i" " >> $TARGET_FILE
   done
   # Just adds the rootflag option at the end
-  echo "$OPTIONS rootflags=subvol=$ROOT_SUBVOL/.snapshots/${latestboot_array[0]}" >> $1
+  echo "$OPTIONS rootflags=subvol=$ROOT_SUBVOL/.snapshots/${latestboot_array[0]}" >> $TARGET_FILE
 }
 ### End function definitions ###
 #This switch statement merely signals what part of the command to run
@@ -90,6 +111,9 @@ case "$1" in
   ;;
   "-s" | "--setup")
   setup
+  ;;
+  "-g" | "--generate")
+  generate_conf
   ;;
   "-r" | "--run")
   update_file
