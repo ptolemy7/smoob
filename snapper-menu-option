@@ -2,7 +2,7 @@
 
 ### An alias for grep ###
 grep=/usr/bin/grep
-
+CONF="./test"
 ### Varibles needed before ANYTHING else ###
 
 #Sets up an array to parse the default loader
@@ -38,23 +38,6 @@ grab_from_loader() {
 }
 
 defalt_variables() {
-  # Default values that will be overwritten by the .conf file later if one wishes
-  TITLE="Well crap . . ."
-  LOADER_FOLDER="/boot/loader"
-  TARGET_FILE="$LOADER_FOLDER/entries/boot_snapshot.conf"
-  OPTIONS=$(grab_from_loader options)
-  LINUX=$(grab_from_loader "linux ")
-  INITRD=$( (grab_from_loader initrd) )
-  # The only way I could figure out to make sure all the initrd options are
-  # carried over. If you have any suggestions please, by all means, let me know
-  declare -a initrd_files
-  # This checks the INITRD array for all of the entries which are not the word "initrd" and
-  # adds them to the initrd_files array
-  for i in ${INITRD[@]}; do
-    if [ "$i" != "initrd" ]; then
-      initrd_files+=($i)
-    fi
-  done
   # This is to get the subvolume which the root is on
   ROOT_SUBVOL_STNG=$(/usr/bin/btrfs sub get-default / )
   ROOT_SUBVOL=${ROOT_SUBVOL_STNG##*path }
@@ -62,7 +45,7 @@ defalt_variables() {
 }
 
 generate_conf() {
-  CONF="./test"
+
   cat_to_conf() {
     echo "$1" >> $CONF
   }
@@ -71,28 +54,41 @@ generate_conf() {
   #Set the default loader
   DEFAULT_LOADER="$LOADER_FOLDER/entries/${defualt_loader_array[1]}.conf"
   TITLE="Well crap . . ."
-
-  TARGET_FILE="$LOADER_FOLDER/entries/boot_snapshot.conf"
+  #TARGET_FILE="$LOADER_FOLDER/entries/boot_snapshot.conf"
+  TARGET_FILE="test_loader.conf"
   OPTIONS=$(grab_from_loader options)
   LINUX=$(grab_from_loader "linux ")
   INITRD=$( (grab_from_loader initrd) )
+  declare -a initrd_files
+  # This checks the INITRD array for all of the entries which are not the word "initrd" and
+  # adds them to the initrd_files array
+  for i in ${INITRD[@]}; do
+    if [ "$i" != "initrd" ]; then
+      initrd_files+=($i)
+    fi
+  done
+
   echo "# This is where you can change the values for the snapper-menu-option" > $CONF
-  cat_to_conf TITLE=$TITLE
-  cat_to_conf LOADER_FOLDER=$LOADER_FOLDER
-  cat_to_conf TARGET_FILE=$TARGET_FILE
-  cat_to_conf OPTIONS=$OPTIONS
-  cat_to_conf LINUX=$LINUX
-  cat_to_conf INITRD=$INITRD
+  cat_to_conf "TITLE='$TITLE'"
+  cat_to_conf "LOADER_FOLDER='$LOADER_FOLDER'"
+  cat_to_conf "TARGET_FILE='$TARGET_FILE'"
+  cat_to_conf "OPTIONS='$OPTIONS'"
+  cat_to_conf "LINUX='$LINUX'"
+  echo "INIRD='${initrd_files[@]}'" >> $CONF
 }
 
 update_file () {
   # Source the conf file. In theory this will overide the defaults just set if
   # the defaults have changed
-  source /etc/snapper-menu-option/snapper_menu_option.conf
-  latestboot_array=( $(/usr/bin/snapper -c root list |
-  $grep boot |
-  /usr/bin/cut -b -5 |
-  /usr/bin/sort -nr))
+  source $CONF
+  # latestboot_array=( $(/usr/bin/snapper -c root list |
+  # $grep boot |
+  # /usr/bin/cut -b -5 |
+  # /usr/bin/sort -nr))
+  latestboot_array=( 3 34 553 343 )
+  echo $TITLE
+  echo $LINUX
+  echo ${INIRD[*]}
   echo "title $TITLE (snapshot # ${latestboot_array[0]} )" > $TARGET_FILE
   #The rest are 2 carrots to just cat onto the end of the file
   echo $LINUX >> $TARGET_FILE
