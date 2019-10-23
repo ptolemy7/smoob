@@ -26,6 +26,7 @@ setup() {
 }
 
 print_help () {
+  # Does just what it says it does, prints the help 'menu' if one can call it that
   echo "useage: snapper-menu-update <option>"
   echo "options:"
   echo "-r, --run: just runs the script with either the defaults or what you have setup"
@@ -34,10 +35,12 @@ print_help () {
 }
 
 grab_from_loader() {
+  # It snatches whatever info we need from the default loader file
   $grep "$1" $DEFAULT_LOADER
 }
 
 defalt_variables() {
+  # Default values that will be overwritten by the .conf file later if one wishes
   TITLE="Well crap . . ."
   LOADER_FOLDER="/boot/loader"
   TARGET_FILE="$LOADER_FOLDER/entries/boot_snapshot.conf"
@@ -45,7 +48,7 @@ defalt_variables() {
   LINUX=$(grab_from_loader "linux ")
   INITRD=$( (grab_from_loader initrd) )
   # The only way I could figure out to make sure all the initrd options are
-  # Carried over. If you have any suggestions please, by all means, let me know
+  # carried over. If you have any suggestions please, by all means, let me know
   declare -a initrd_files
   # This checks the INITRD array for all of the entries which are not the word "initrd" and
   # adds them to the initrd_files array
