@@ -10,26 +10,26 @@ CONF="./test"
 
 ### Start function definitions ###
 setup() {
-  echo "Have you setup snapper? [Y/N], (choosing N will configure it)"
+  $echo "Have you setup snapper? [Y/N], (choosing N will configure it)"
   read $input1
   if [  "$input1" = "N"  ]; then
     /usr/bin/snapper -c
     /usr/bin/systemctl enable snapper-boot.timer
     /usr/bin/systemctl enable snapper-cleanup.timer
-    echo "Snapper setup!"
+    $echo "Snapper setup!"
   else
-    echo "Look at you, being prepared and all"
-    echo " "
+    $echo "Look at you, being prepared and all"
+    $echo " "
   fi
 }
 
 print_help () {
   # Does just what it says it does, prints the help 'menu' if one can call it that
-  echo "useage: snapper-menu-update <option>"
-  echo "options:"
-  echo "-r, --run: just runs the script with either the defaults or what you have setup"
-  echo "-s, --setup: sets up what to use as the variables for the file name, etc; makes sure snapper is configured"
-  echo "-h, --help: prints this message"
+  $echo "useage: snapper-menu-update <option>"
+  $echo "options:"
+  $echo "-r, --run: just runs the script with either the defaults or what you have setup"
+  $echo "-s, --setup: sets up what to use as the variables for the file name, etc; makes sure snapper is configured"
+  $echo "-h, --help: prints this message"
 }
 
 grab_from_loader() {
@@ -47,7 +47,7 @@ defalt_variables() {
 generate_conf() {
 
   cat_to_conf() {
-    echo "$1" >> $CONF
+    $echo "$1" >> $CONF
   }
   LOADER_FOLDER="/boot/loader"
   defualt_loader_array=( $($grep default $LOADER_FOLDER/loader.conf) )
@@ -68,13 +68,13 @@ generate_conf() {
     fi
   done
 
-  echo "# This is where you can change the values for the snapper-menu-option" > $CONF
+  $echo "# This is where you can change the values for the snapper-menu-option" > $CONF
   cat_to_conf "TITLE='$TITLE'"
   cat_to_conf "LOADER_FOLDER='$LOADER_FOLDER'"
   cat_to_conf "TARGET_FILE='$TARGET_FILE'"
   cat_to_conf "OPTIONS='$OPTIONS'"
   cat_to_conf "LINUX='$LINUX'"
-  echo "INIRD='${initrd_files[@]}'" >> $CONF
+  $echo "INIRD='${initrd_files[@]}'" >> $CONF
 }
 
 update_file () {
@@ -86,18 +86,18 @@ update_file () {
   # /usr/bin/cut -b -5 |
   # /usr/bin/sort -nr))
   latestboot_array=( 3 34 553 343 )
-  echo $TITLE
-  echo $LINUX
-  echo ${INIRD[*]}
-  echo "title $TITLE (snapshot # ${latestboot_array[0]} )" > $TARGET_FILE
+  $echo $TITLE
+  $echo $LINUX
+  $echo ${INIRD[*]}
+  $echo "title $TITLE (snapshot # ${latestboot_array[0]} )" > $TARGET_FILE
   #The rest are 2 carrots to just cat onto the end of the file
-  echo $LINUX >> $TARGET_FILE
+  $echo $LINUX >> $TARGET_FILE
   #Copies the initrd files one line at a time
   for i in ${initrd_files[@]}; do
-    echo "initrd "$i" " >> $TARGET_FILE
+    $echo "initrd "$i" " >> $TARGET_FILE
   done
   # Just adds the rootflag option at the end
-  echo "$OPTIONS rootflags=subvol=$ROOT_SUBVOL/.snapshots/${latestboot_array[0]}" >> $TARGET_FILE
+  $echo "$OPTIONS rootflags=subvol=$ROOT_SUBVOL/.snapshots/${latestboot_array[0]}" >> $TARGET_FILE
 }
 ### End function definitions ###
 #This switch statement merely signals what part of the command to run
@@ -115,6 +115,6 @@ case "$1" in
   update_file
   ;;
   * )
-  echo "command not recongized, try -h or --help for more"
+  $echo "command not recongized, try -h or --help for more"
   ;;
 esac

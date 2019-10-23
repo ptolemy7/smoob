@@ -5,3 +5,43 @@ grep=/usr/bin/grep
 systemctl=/usr/bin/systemctl
 snapper=/usr/bin/snapper
 btrfs=/usr/bin/btrfs
+echo=/usr/bin/echo
+
+# Defining where to point for the .conf file
+CONF="/etc/snapper-menu-option/snapper-menu-option.conf"
+
+# Defining the functions to be used
+
+# The setup function which will enable the correct environment for this to work
+# The info echo'd is pretty self explanetory
+setup() {
+  $echo "Do you want snapper to be configured for you?[Y/N]"
+  read $input1
+  if [ "$input1" = "Y" ]; then
+    $snapper -c
+    $echo "Enabling snapper to take a snapshot at boot . . ."
+    $systemctl enable snapper-boot.timer
+    $echo "Enabling automatic cleanup of snapshots . . ."
+    $systemctl enable snapper-cleanup.timer
+    $echo "Enabling this script to run at boot to update everything . . . "
+    $systemctl enable update_snapshot_entry.service
+    $echo "Done!"
+  else
+    $echo "Ok then, just make sure you have everything enabled or you will get and error"
+    $echo " "
+  fi
+}
+
+# Does just what it says it does, prints the help 'menu' if one can call it that
+print_help () {
+  $echo "usage: snapper-menu-update <option>"
+  $echo "options:"
+  $echo "-g, --generate: autogenerates the .conf file"
+  $echo "-r, --run: just runs the script with either the defaults or what you have setup"
+  $echo "-s, --setup: sets up what to use as the variables for the file name, etc; makes sure snapper is configured"
+  $echo "-h, --help: prints this message"
+}
+
+gene_conf() {
+
+}
