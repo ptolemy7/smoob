@@ -42,6 +42,24 @@ print_help () {
   $echo "-h, --help: prints this message"
 }
 
-gene_conf() {
+gen_conf() {
 
+}
+
+# This is the important bit; it
+update_file() {
+  source $CONF
+  latestboot_array=( $(/usr/bin/snapper -c root list |
+  $grep boot |
+  /usr/bin/cut -b -5 |
+  /usr/bin/sort -nr))
+  $echo "title $TITLE (snapshot # ${latestboot_array[0]} )" > $TARGET_FILE
+  #The rest are 2 carrots to just cat onto the end of the file
+  $echo $LINUX >> $TARGET_FILE
+  #Copies the initrd files one line at a time
+  for i in ${initrd_files[@]}; do
+    $echo "initrd "$i" " >> $TARGET_FILE
+  done
+# Just adds the rootflag option at the end
+  $echo "$OPTIONS rootflags=subvol=$ROOT_SUBVOL/.snapshots/${latestboot_array[0]}/snapshot" >> $TARGET_FILE
 }

@@ -81,10 +81,10 @@ update_file () {
   # Source the conf file. In theory this will overide the defaults just set if
   # the defaults have changed
   source $CONF
-  # latestboot_array=( $(/usr/bin/snapper -c root list |
-  # $grep boot |
-  # /usr/bin/cut -b -5 |
-  # /usr/bin/sort -nr))
+  latestboot_array=( $(/usr/bin/snapper -c root list |
+  $grep boot |
+  /usr/bin/cut -b -5 |
+  /usr/bin/sort -nr))
   latestboot_array=( 3 34 553 343 )
   $echo $TITLE
   $echo $LINUX
