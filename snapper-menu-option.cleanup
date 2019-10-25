@@ -118,6 +118,18 @@ update_file() {
   $echo "$OPTIONS rootflags=subvol=$ROOT_SUBVOL/.snapshots/${latestboot_array[0]}/snapshot" >> $TARGET_FILE
 }
 
+# Takes a message & a command as input, prompts the user with the message, then runs the command iff yes
+confirm() {
+  # This should be the message
+  echo "$1"
+  read $input
+  if [ "$input" = "Y" ]; then
+    # This should be the command to run
+    $2
+  else
+    exit 0
+  fi
+}
 
 case "$1" in
   "-h" | "--help")
@@ -127,7 +139,7 @@ case "$1" in
   setup
   ;;
   "-g" | "--generate")
-  gen_conf
+  confirm "This WILL overide any custom config you have, you sure? [Y/N]" gen_conf
   ;;
   "-r" | "--run")
   update_file
