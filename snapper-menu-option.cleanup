@@ -15,6 +15,11 @@ CONF="./test"
 # The setup function which will enable the correct environment for this to work
 # The info echo'd is pretty self explanetory
 setup() {
+  $echo "Generating the conf file if it has not already been done"
+  if [ ! -f $CONF ]; then
+    gen_conf
+    $echo "Configuration file generated! If you wish to edit it, it is located at /etc/snapper-menu-option-snapper-menu-option.conf"
+  fi
   $echo "Do you want snapper to be configured for you?[Y/N]"
   read $input1
   if [ "$input1" = "Y" ]; then
@@ -121,7 +126,7 @@ update_file() {
 # Takes a message & a command as input, prompts the user with the message, then runs the command iff yes
 confirm() {
   # This should be the message
-  echo "$1"
+  $echo "$1"
   read $input
   if [ "$input" = "Y" ]; then
     # This should be the command to run
@@ -131,6 +136,7 @@ confirm() {
   fi
 }
 
+# Just a switch statement to parse the actual input
 case "$1" in
   "-h" | "--help")
   print_help
