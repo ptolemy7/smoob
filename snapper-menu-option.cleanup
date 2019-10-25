@@ -1,4 +1,4 @@
-#!/bin/#!/usr/bin/env bash
+#!/bin/bash
 
 # Making no assumptions about PATH, so defining some aliases here
 grep=/usr/bin/grep
@@ -8,7 +8,7 @@ btrfs=/usr/bin/btrfs
 echo=/usr/bin/echo
 
 # Defining where to point for the .conf file
-CONF="test"
+CONF="./test"
 
 # Defining the functions to be used
 
@@ -51,13 +51,19 @@ gen_conf() {
   ROOT_SUBVOL=${ROOT_SUBVOL_STNG##*path }
   # This give you where the loader folder is
   LOADER_FOLDER="/boot/loader"
+  # This is the name of the loader.conf file, really doesn't matter
+  TARGET_FILE="test_loader.conf"
   # Snatches what the default loader is, used later
   default_loader_array=( $($grep default $LOADER_FOLDER/loader.conf) )
   #Set the default loader
-  DEFAULT_LOADER="$LOADER_FOLDER/entries/${defualt_loader_array[1]}.conf"
+  DEFAULT_LOADER="$LOADER_FOLDER/entries/${default_loader_array[1]}.conf"
   # This function can now be defined
   grab_from_loader() {
     $grep "$1" $DEFAULT_LOADER
+  }
+  cat_to_conf() {
+    $echo "$1" >> $CONF
+  }
   # These variables affect the systemd-boot .conf file itself
   # Default title to be displayed in the systemd-boot menu
   TITLE="Snapshot boot"
@@ -86,15 +92,16 @@ gen_conf() {
   cat_to_conf "TARGET_FILE='$TARGET_FILE'"
   cat_to_conf "OPTIONS='$OPTIONS'"
   cat_to_conf "LINUX='$LINUX'"
-  $echo "INIRD=(${initrd_files[@]})" >> $CONF
-}
+  $echo "initrd_files=(${initrd_files[@]})" >> $CONF
 
 }
+
+
 
 # This is the important bit; it
 update_file() {
-  if [ !e $CONF ]; then
-    generate_conf()
+  if [ ! -f $CONF ]; then
+    gen_conf
   fi
   source $CONF
   latestboot_array=( $(/usr/bin/snapper -c root list |

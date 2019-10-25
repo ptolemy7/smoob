@@ -74,7 +74,7 @@ generate_conf() {
   cat_to_conf "TARGET_FILE='$TARGET_FILE'"
   cat_to_conf "OPTIONS='$OPTIONS'"
   cat_to_conf "LINUX='$LINUX'"
-  $echo "INIRD=(${initrd_files[@]})" >> $CONF
+  $echo "initrd_files=(${initrd_files[@]})" >> $CONF
 }
 
 update_file () {
