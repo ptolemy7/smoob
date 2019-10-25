@@ -1,7 +1,0 @@
-# This is where you can change the values for the snapper-menu-option
-TITLE='Well crap . . .'
-LOADER_FOLDER='/boot/loader'
-TARGET_FILE='test_loader.conf'
-OPTIONS='options quiet rd.luks.name=c07db727-3bbc-4a22-88b4-3d33f11c76ed=root rd.luks.options=discard root=/dev/mapper/root quiet  '
-LINUX='linux /vmlinuz-linux'
-initrd_files='/intel-ucode.img /initramfs-linux.img'
