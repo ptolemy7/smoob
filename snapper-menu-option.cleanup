@@ -96,9 +96,8 @@ gen_conf() {
 
 }
 
-
-
-# This is the important bit; it
+# This is the important bit; it sources the .conf file (if it exists)
+# It then 'updates' (it really just rewrites the file) to cause the changes to take place
 update_file() {
   if [ ! -f $CONF ]; then
     gen_conf
