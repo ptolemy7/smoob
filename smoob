@@ -8,8 +8,9 @@ btrfs=/usr/bin/btrfs
 echo=/usr/bin/echo
 
 # Defining where to point for the .conf file
-CONF="/etc/snapper-menu-option/snapper-menu-option.conf"
+CONF="./test"
 
+#CONF="/etc/snapper-menu-option/snapper-menu-option.conf"
 # Defining the functions to be used
 
 # The setup function which will enable the correct environment for this to work
@@ -123,18 +124,6 @@ update_file() {
   $echo "$OPTIONS rootflags=subvol=$ROOT_SUBVOL/.snapshots/${latestboot_array[0]}/snapshot" >> $TARGET_FILE
 }
 
-# Takes a message & a command as input, prompts the user with the message, then runs the command iff yes
-confirm() {
-  # This should be the message
-  $echo "$1"
-  read $input
-  if [ "$input" = "Y" ]; then
-    # This should be the command to run
-    $2
-  else
-    exit 0
-  fi
-}
 
 # Just a switch statement to parse the actual input
 case "$1" in
@@ -145,7 +134,7 @@ case "$1" in
   setup
   ;;
   "-g" | "--generate")
-  confirm "This WILL overide any custom config you have, you sure? [Y/N]" gen_conf
+  gen_conf
   ;;
   "-r" | "--run")
   update_file
