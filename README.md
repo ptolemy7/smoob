@@ -1,4 +1,4 @@
-# Snapper-Menu-Option creator
+# Snapper Menu Option On Boot (at the moment, also known as smoob)
 ###### *(The name is a work in progress)*
 
 This script and accompanying systemd files are meant to do exactly what the title states, create a boot option for systemd boot for the latest snapshot which actually booted, something which can be very useful on a rolling release such as Arch Linux
