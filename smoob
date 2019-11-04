@@ -1,0 +1,145 @@
+#!/bin/bash
+
+# Making no assumptions about PATH, so defining some aliases here
+grep=/usr/bin/grep
+systemctl=/usr/bin/systemctl
+snapper=/usr/bin/snapper
+btrfs=/usr/bin/btrfs
+echo=/usr/bin/echo
+
+# Defining where to point for the .conf file
+CONF="./test"
+
+#CONF="/etc/snapper-menu-option/snapper-menu-option.conf"
+# Defining the functions to be used
+
+# The setup function which will enable the correct environment for this to work
+# The info echo'd is pretty self explanetory
+setup() {
+  $echo "Generating the conf file if it has not already been done"
+  if [ ! -f $CONF ]; then
+    gen_conf
+    $echo "Configuration file generated! If you wish to edit it, it is located at /etc/snapper-menu-option-snapper-menu-option.conf"
+  fi
+  $echo "Do you want snapper to be configured for you?[Y/N]"
+  read $input1
+  if [ "$input1" = "Y" ]; then
+    $snapper -c
+    $echo "Enabling snapper to take a snapshot at boot . . ."
+    $systemctl enable snapper-boot.timer
+    $echo "Enabling automatic cleanup of snapshots . . ."
+    $systemctl enable snapper-cleanup.timer
+    $echo "Enabling this script to run at boot to update everything . . . "
+    $systemctl enable update_snapshot_entry.service
+    $echo "Done!"
+  else
+    $echo "Ok then, just make sure you have everything enabled or you will get and error"
+    $echo " "
+  fi
+}
+
+# Does just what it says it does, prints the help 'menu' if one can call it that
+print_help () {
+  $echo "usage: snapper-menu-update <option>"
+  $echo "options:"
+  $echo "-g, --generate: autogenerates the .conf file"
+  $echo "-r, --run: just runs the script with either the defaults or what you have setup"
+  $echo "-s, --setup: sets up what to use as the variables for the file name, etc; makes sure snapper is configured"
+  $echo "-h, --help: prints this message"
+}
+
+gen_conf() {
+  # The following variables up to the funciton definition are used only in the logic of the script
+  # These two first get the string which contains the default subvolume
+  # Important bit: this is the assume default behavior
+  # Then it is parsed to get what the actual thing it
+  ROOT_SUBVOL_STNG=$(/usr/bin/btrfs sub get-default / )
+  ROOT_SUBVOL=${ROOT_SUBVOL_STNG##*path }
+  # This give you where the loader folder is
+  LOADER_FOLDER="/boot/loader"
+  # This is the name of the loader.conf file, really doesn't matter
+  TARGET_FILE="test_loader.conf"
+  # Snatches what the default loader is, used later
+  default_loader_array=( $($grep default $LOADER_FOLDER/loader.conf) )
+  #Set the default loader
+  DEFAULT_LOADER="$LOADER_FOLDER/entries/${default_loader_array[1]}.conf"
+  # This function can now be defined
+  grab_from_loader() {
+    $grep "$1" $DEFAULT_LOADER
+  }
+  cat_to_conf() {
+    $echo "$1" >> $CONF
+  }
+  # These variables affect the systemd-boot .conf file itself
+  # Default title to be displayed in the systemd-boot menu
+  TITLE="Snapshot boot"
+  # Boot options which are passed to the initramfs as kernel parameter
+  OPTIONS=$(grab_from_loader options)
+  # What file like vmlinux-linux to use
+  LINUX=$(grab_from_loader "linux ")
+  # This one takes a bit more since often there are more than one init ram disks
+  # (That is, if you have a microcode installed)
+  # ( I do so that is why this feature is here and none of the others have it)
+  initrd=$( (grab_from_loader initrd) )
+  # Aditional manipulation to make everything play nice
+  # Creating an array
+  declare -a initrd_files
+  # Going through the first initrd array to select only the words which aren't
+  #'initrd', so that it can be parsed right into the new file
+  for i in ${initrd[@]}; do
+    if [ $i != "initrd" ]; then
+      initrd_files+=($i)
+    fi
+  done
+  # Now done with getting all the variables, now to write them to the CONF file
+  $echo "# This is where you can change the values for the snapper-menu-option" > $CONF
+  cat_to_conf "TITLE='$TITLE'"
+  cat_to_conf "LOADER_FOLDER='$LOADER_FOLDER'"
+  cat_to_conf "TARGET_FILE='$TARGET_FILE'"
+  cat_to_conf "OPTIONS='$OPTIONS'"
+  cat_to_conf "LINUX='$LINUX'"
+  $echo "initrd_files=(${initrd_files[@]})" >> $CONF
+
+}
+
+# This is the important bit; it sources the .conf file (if it exists)
+# It then 'updates' (it really just rewrites the file) to cause the changes to take place
+update_file() {
+  if [ ! -f $CONF ]; then
+    gen_conf
+  fi
+  source $CONF
+  latestboot_array=( $(/usr/bin/snapper -c root list |
+  $grep boot |
+  /usr/bin/cut -b -5 |
+  /usr/bin/sort -nr))
+  $echo "title $TITLE (snapshot # ${latestboot_array[0]} )" > $TARGET_FILE
+  #The rest are 2 carrots to just cat onto the end of the file
+  $echo $LINUX >> $TARGET_FILE
+  #Copies the initrd files one line at a time
+  for i in ${initrd_files[@]}; do
+    $echo "initrd "$i" " >> $TARGET_FILE
+  done
+# Just adds the rootflag option at the end
+  $echo "$OPTIONS rootflags=subvol=$ROOT_SUBVOL/.snapshots/${latestboot_array[0]}/snapshot" >> $TARGET_FILE
+}
+
+
+# Just a switch statement to parse the actual input
+case "$1" in
+  "-h" | "--help")
+  print_help
+  ;;
+  "-s" | "--setup")
+  setup
+  ;;
+  "-g" | "--generate")
+  gen_conf
+  ;;
+  "-r" | "--run")
+  update_file
+  ;;
+  * )
+  $echo "command not recongized, try -h or --help for more"
+  ;;
+esac
