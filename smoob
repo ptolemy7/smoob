@@ -8,9 +8,8 @@ btrfs=/usr/bin/btrfs
 echo=/usr/bin/echo
 
 # Defining where to point for the .conf file
-CONF="./test"
+CONF="/etc/smoob/smoob.conf"
 
-#CONF="/etc/snapper-menu-option/snapper-menu-option.conf"
 # Defining the functions to be used
 
 # The setup function which will enable the correct environment for this to work
