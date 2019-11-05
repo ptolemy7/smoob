@@ -57,7 +57,7 @@ gen_conf() {
   # This give you where the loader folder is
   LOADER_FOLDER="/boot/loader"
   # This is the name of the loader.conf file, really doesn't matter
-  TARGET_FILE="test_loader.conf"
+  TARGET_FILE="$LOADER_FOLDER/smoob.conf"
   # Snatches what the default loader is, used later
   default_loader_array=( $($grep default $LOADER_FOLDER/loader.conf) )
   #Set the default loader
