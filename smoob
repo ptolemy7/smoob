@@ -98,6 +98,7 @@ gen_conf() {
   cat_to_conf "OPTIONS='$OPTIONS'"
   cat_to_conf "LINUX='$LINUX'"
   $echo "initrd_files=(${initrd_files[@]})" >> $CONF
+  cat_to_conf "ROOT_SUBVOL='$ROOT_SUBVOL'"
 
 }
 
