@@ -29,7 +29,7 @@ setup() {
     $echo "Enabling automatic cleanup of snapshots . . ."
     $systemctl enable snapper-cleanup.timer
     $echo "Enabling this script to run at boot to update everything . . . "
-    $systemctl enable update_snapshot_entry.service
+    $systemctl enable smoob.service
     $echo "Done!"
   else
     $echo "Ok then, just make sure you have everything enabled or you will get and error"
