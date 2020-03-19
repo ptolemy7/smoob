@@ -114,8 +114,9 @@ update_file() {
   $grep boot |
   /usr/bin/cut -b -5 |
   /usr/bin/sort -nr))
-  $btrfs property set ${latestboot_array[1]} ro true
-  $btrfs property set ${latestboot_array[0]} ro false
+  # Here banking off of the default snapper behavoir
+  $btrfs property set /.snapshots/${latestboot_array[1]}/snapshot ro true
+  $btrfs property set /.snapshots/${latestboot_array[0]}/snapshot ro false
   $echo "title $TITLE (snapshot # ${latestboot_array[0]} )" > $TARGET_FILE
   #The rest are 2 carrots to just cat onto the end of the file
   $echo $LINUX >> $TARGET_FILE
