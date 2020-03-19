@@ -111,12 +111,13 @@ update_file() {
   fi
   source $CONF
   latestboot_array=( $(/usr/bin/snapper -c root list |
-  /usr/bin/cut -b -5 |
-  /usr/bin/sort -nr))
-  # Here banking off of the default snapper behavoir
-  $btrfs property set /.snapshots/${latestboot_array[1]}/snapshot ro true
-  $btrfs property set /.snapshots/${latestboot_array[0]}/snapshot ro false
-  $echo "title $TITLE (snapshot # ${latestboot_array[0]} )" > $TARGET_FILE
+  /usr/bin/cut -b 1 |
+  /usr/bin/sort -nr) )
+  /bin/echo ${latestboot_array[@]}
+  # Here banking off of thie default snapper behavoir
+  $btrfs property set /.snapshots/${latestboot_array[2]}/snapshot ro true
+  $btrfs property set /.snapshots/${latestboot_array[1]}/snapshot ro false
+  $echo "title $TITLE (snapshot # ${latestboot_array[1]} )" > $TARGET_FILE
   #The rest are 2 carrots to just cat onto the end of the file
   $echo $LINUX >> $TARGET_FILE
   #Copies the initrd files one line at a time
