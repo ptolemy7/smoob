@@ -6,6 +6,7 @@ systemctl=/usr/bin/systemctl
 snapper=/usr/bin/snapper
 btrfs=/usr/bin/btrfs
 echo=/usr/bin/echo
+cat=/usr/bin/cat
 
 # Defining where to point for the .conf file
 CONF="/etc/smoob/smoob.conf"
@@ -113,6 +114,8 @@ update_file() {
   $grep boot |
   /usr/bin/cut -b -5 |
   /usr/bin/sort -nr))
+  $btrfs property set ${latestboot_array[1]} ro true
+  $btrfs property set ${latestboot_array[0]} ro false
   $echo "title $TITLE (snapshot # ${latestboot_array[0]} )" > $TARGET_FILE
   #The rest are 2 carrots to just cat onto the end of the file
   $echo $LINUX >> $TARGET_FILE
@@ -123,7 +126,6 @@ update_file() {
 # Just adds the rootflag option at the end
   $echo "$OPTIONS rootflags=subvol=$ROOT_SUBVOL/.snapshots/${latestboot_array[0]}/snapshot" >> $TARGET_FILE
 }
-
 
 # Just a switch statement to parse the actual input
 case "$1" in
