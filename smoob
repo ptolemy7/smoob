@@ -111,7 +111,6 @@ update_file() {
   fi
   source $CONF
   latestboot_array=( $(/usr/bin/snapper -c root list |
-  $grep boot |
   /usr/bin/cut -b -5 |
   /usr/bin/sort -nr))
   # Here banking off of the default snapper behavoir
